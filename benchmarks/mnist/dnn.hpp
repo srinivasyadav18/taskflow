@@ -176,6 +176,7 @@ struct MNIST {
     std::string path = std::experimental::filesystem::current_path();
     path = path.substr(0, path.rfind("taskflow") + 8);
     path += "/benchmarks/mnist/";
+    std::cout << "Found path : " <<  path << std::endl;
 
     images = read_mnist_image(path + "./train-images.data");
     labels = read_mnist_label(path + "./train-labels.data");

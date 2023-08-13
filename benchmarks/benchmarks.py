@@ -4,14 +4,14 @@ import subprocess
 import sys
 import math
 import argparse
-import matplotlib.pyplot as plot
+import matplotlib.pyplot as plt
 import statistics as stat
 
-tmp_file="/tmp/tmp.txt"
+base_dir="/work/srinivasyadav227/2023/sc23_tf/"
 
 def analyze(Y):
   print(
-    "  -> [min, max, avg] = [%f, %f, %f]" % 
+    "  -> [min, max, avg] = [%f, %f, %f]" %
     (min(Y), max(Y), stat.mean(Y))
   )
 
@@ -20,18 +20,25 @@ def analyze(Y):
 ###########################################################
 def run(target, method, thread, round):
 
-  exe = target + '/' + target
-  print(exe, '-m', method, '-t', thread, '-r', round)
+  exe = './bench_' + target
+  tmp_file = base_dir + 'logs_poster/' + f'{target}_{method}.log'
+  print('Writing to : ', tmp_file)
 
-  with open(tmp_file, "w") as ofs:
-    subprocess.call(
-      [exe, '-m', method, '-t', str(thread), '-r', str(round)], 
-      stdout=ofs
-    )
+  if (method == 'hpx') or (method == 'hpx_simd'):
+    with open(tmp_file, "w") as ofs:
+      exe_list = [f'{exe}_hpx', f'--m={method}', f'--hpx:threads={str(thread)}', f'--t={str(thread)}', f'--r={str(round)}']
+      print(f'Executing: {exe_list}')
+      subprocess.call([f'{exe}_hpx', f'--m={method}', f'--hpx:threads={str(thread)}', f'--t={str(thread)}', f'--r={str(round)}'],
+                       stdout=ofs)
+  else:
+    with open(tmp_file, "w") as ofs:
+      exe_list = [exe, '-m', method, '-t', str(thread), '-r', str(round)],
+      print(f'Executing: {exe_list}')
+      subprocess.call([exe, '-m', method, '-t', str(thread), '-r', str(round)], stdout=ofs)
 
   X = []
   Y = []
-  
+
   with open(tmp_file, "r") as ifs:
     ifs.readline()
     ifs.readline()
@@ -59,29 +66,36 @@ def main():
     '-b', '--benchmarks',
     nargs='+',
     help='list of benchmark names',
-    choices=['wavefront', 
-             'graph_traversal', 
-             'binary_tree', 
-             'linear_chain', 
+    choices=['wavefront',
+             'graph_traversal',
+             'binary_tree',
+             'linear_chain',
              'matrix_multiplication',
-             'mnist'],
+             'mnist',
+             'sort',
+             'for_each',
+             'reduce_sum',
+             'scan',
+             'black_scholes',
+             'mandelbrot'
+             ],
     required=True
   )
 
-  parser.add_argument(
-    '-m','--methods', 
-    nargs='+', 
-    help='list of tasking methods', 
-    default=['tf', 'tbb', 'omp'],
-    choices=['tf', 'tbb', 'omp']
-  )
+  benchmark_titles = {}
+  benchmark_titles['for_each'] = ['Number of Elements', 'for each']
+  benchmark_titles['scan'] = ['Number of Elements', 'Inclusive Scan']
+  benchmark_titles['sort'] = ['Number of Elements', 'Sort']
+  benchmark_titles['mandelbrot'] = ['Number of Elements', 'Mandelbrot Set']
+  benchmark_titles['reduce_sum'] = ['Number of Elements', 'Reduce Sum']
+  benchmark_titles['matrix_multiplication'] = ['Matrix size (m = n = o)', 'Matrix Multiplication']
 
   parser.add_argument(
-    '-t', '--threads', 
-    type=int,
+    '-m','--methods',
     nargs='+',
-    help='list of the number of threads',
-    required=True
+    help='list of tasking methods',
+    default=['seq', 'tf', 'tbb', 'omp', 'hpx'],
+    choices=['seq', 'tf', 'tbb', 'omp', 'hpx', 'hpx_simd']
   )
 
   parser.add_argument(
@@ -91,77 +105,60 @@ def main():
     default=1
   )
 
-  parser.add_argument(
-    '-p', '--plot',
-    type=bool,
-    help='show the plot or not',
-    default=False
-  )
-
-  parser.add_argument(
-    '-o', '--output',
-    type=str,
-    help='file name to save the plot result',
-    default="result.png"
-  )
-  
   # parse the arguments
   args = parser.parse_args()
-  
+
   print('benchmarks: ', args.benchmarks)
-  print('threads:', args.threads)
   print('methods:', args.methods)
   print('num_rounds:', args.num_rounds)
-  print('plot:', args.plot)
-
-  rows = len(args.benchmarks)
-  cols = len(args.threads)
-
-  figc = plot.rcParams["figure.figsize"][0]
-  figr = plot.rcParams["figure.figsize"][1]
-
-  plot.rcParams["figure.figsize"] = [figc*cols*0.5, figr*rows*0.5]
-
-  fig, axes = plot.subplots(rows, cols)
-  plot_index = 1
+  print()
 
   for benchmark in args.benchmarks:
-    for thread in args.threads:
-      ax = plot.subplot(rows, cols, plot_index)
-      for method in args.methods:
-        ax = plot.title(benchmark + ' (' + str(thread) + ' threads)')
-        X, Y = run(
-          benchmark, method, thread, args.num_rounds
-        )
-        #ax.text(
-        #  .5, .9, 
-        #  benchmark + ' (' + str(thread) + ' threads)',
-        #  horizontalalignment='center',
-        #  transform=ax.transAxes
-        #)
-        if method == 'tf':
-          marker = ''
-          color  = 'b'
-        elif method == 'omp':
-          marker = '+'
-          color  = 'g'
-        else:
-          marker = '.'
-          color  = 'r'
+    fig, ax = plt.subplots(figsize=(10,6))
+    for method in args.methods:
+      print(benchmark, method)
+      X, Y = run(
+        benchmark, method, 40, args.num_rounds
+      )
+      if method == 'tf':
+        ls = '--'
+        marker = 'o'
+        # color  = 'b'
+      elif method == 'omp':
+        ls = '--'
+        marker = 'D'
+        # color  = 'g'
+      elif method == 'hpx':
+        ls = '-.'
+        marker = '>'
+      elif method == 'hpx_simd':
+        ls = '-.'
+        marker = '<'
+        # color  = 'm'
+      elif method == 'tbb':
+        ls = '--'
+        marker = '+'
+      else:
+        ls = ':'
+        marker = 's'
+        # color  = 'r'
 
-        plot.plot(X, Y, label=method, marker=marker, color=color)
-        plot.legend()
-        print(X)
-        print(Y)
-      plot_index = plot_index + 1
-
-  plot.tight_layout()
-  plot.savefig(args.output)
-
-  if args.plot:
-    plot.show()
-
-  plot.close(fig)
+      print('X:',X)
+      print('Y:',Y)
+      plt.plot(X, Y, label=method, linestyle=ls, marker=marker)
+      print('------------------------------------------------\n')
+    plt.title(f'{benchmark_titles[benchmark][1]} Benchmark\n INTEL XEON 8358, Rostam Cluster, CCT, LSU', fontsize=20)
+    plt.xscale('log', base=10)
+    plt.yscale('log', base=10)
+    # plt.yticks(ticks=[10, 100, 1000], labels=[10, 100, 1000], fontsize=16)
+    # plt.xticks(ticks=[1, 2, 4, 8, 16, 32, 64, 128], labels=[1, 2, 4, 8, 16, 32, 64, 128], fontsize=16)
+    plt.xlabel(benchmark_titles[benchmark][0], fontweight="heavy", fontsize=18)
+    plt.ylabel("Runtime (s) in log scale", fontweight="heavy", fontsize=18)
+    plt.legend(loc='upper left', fontsize=18)
+    plt.show()
+    fig_path = f'{base_dir}plots_poster/poster_{benchmark}.png'
+    print('Generated plot:', fig_path)
+    plt.savefig(fig_path)
 
 # run the main entry
 if __name__ == "__main__":

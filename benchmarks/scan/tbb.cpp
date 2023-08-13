@@ -54,9 +54,9 @@ void scan_tbb(size_t num_threads) {
   inclusive_scan(input, 0, output, std::multiplies<int>{});
 }
 
-std::chrono::microseconds measure_time_tbb(size_t num_threads) {
+std::chrono::nanoseconds measure_time_tbb(size_t num_threads) {
   auto beg = std::chrono::high_resolution_clock::now();
   scan_tbb(num_threads);
   auto end = std::chrono::high_resolution_clock::now();
-  return std::chrono::duration_cast<std::chrono::microseconds>(end - beg);
+  return std::chrono::duration_cast<std::chrono::nanoseconds>(end - beg);
 }

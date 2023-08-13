@@ -33,10 +33,10 @@ void sort_omp(size_t nthreads) {
   }
 }
 
-std::chrono::microseconds measure_time_omp(size_t num_threads) {
+std::chrono::nanoseconds measure_time_omp(size_t num_threads) {
   auto beg = std::chrono::high_resolution_clock::now();
   sort_omp(num_threads);
   auto end = std::chrono::high_resolution_clock::now();
-  return std::chrono::duration_cast<std::chrono::microseconds>(end - beg);
+  return std::chrono::duration_cast<std::chrono::nanoseconds>(end - beg);
 }
 

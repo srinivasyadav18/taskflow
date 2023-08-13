@@ -101,9 +101,9 @@ void matrix_multiplication_tbb(unsigned num_threads) {
   //std::cout << reduce_sum() << std::endl;
 }
 
-std::chrono::microseconds measure_time_tbb(unsigned num_threads) {
+std::chrono::nanoseconds measure_time_tbb(unsigned num_threads) {
   auto beg = std::chrono::high_resolution_clock::now();
   matrix_multiplication_tbb(num_threads);
   auto end = std::chrono::high_resolution_clock::now();
-  return std::chrono::duration_cast<std::chrono::microseconds>(end - beg);
+  return std::chrono::duration_cast<std::chrono::nanoseconds>(end - beg);
 }

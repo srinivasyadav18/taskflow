@@ -32,11 +32,14 @@ void matrix_multiplication(
       else if(model == "omp") {
         runtime += measure_time_omp(num_threads).count();
       }
+      else if(model == "seq") {
+        runtime += measure_time_seq(num_threads).count();
+      }
       else assert(false);
     }
 
     std::cout << std::setw(12) << N
-              << std::setw(12) << runtime / num_rounds / 1e3
+              << std::setw(12) << runtime / num_rounds / 1e9
               << std::endl;
 
     deallocate_matrix();
@@ -56,8 +59,8 @@ int main(int argc, char* argv[]) {
   std::string model = "tf";
   app.add_option("-m,--model", model, "model name tbb|omp|tf (default=tf)")
      ->check([] (const std::string& m) {
-        if(m != "tbb" && m != "tf" && m != "omp") {
-          return "model name should be \"tbb\", \"omp\", or \"tf\"";
+        if(m != "tbb" && m != "tf" && m != "omp" && m != "seq") {
+          return "model name should be seq or \"tbb\", \"omp\", or \"tf\"";
         }
         return "";
      });

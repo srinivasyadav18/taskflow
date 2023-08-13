@@ -11,7 +11,7 @@
 
 inline std::vector<double> vec;
 
-std::chrono::microseconds measure_time_taskflow(unsigned);
-std::chrono::microseconds measure_time_tbb(unsigned);
-std::chrono::microseconds measure_time_omp(unsigned);
-
+std::chrono::nanoseconds measure_time_taskflow(unsigned);
+std::chrono::nanoseconds measure_time_tbb(unsigned);
+std::chrono::nanoseconds measure_time_omp(unsigned);
+std::chrono::nanoseconds measure_time_seq(unsigned);

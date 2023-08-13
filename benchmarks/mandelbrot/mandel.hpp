@@ -113,6 +113,7 @@ inline std::tuple<int, int, int> get_color(int n) {
 }
 
 
-std::chrono::microseconds measure_time_taskflow(unsigned);
-std::chrono::microseconds measure_time_omp(unsigned);
-std::chrono::microseconds measure_time_tbb(unsigned);
+std::chrono::nanoseconds measure_time_taskflow(unsigned);
+std::chrono::nanoseconds measure_time_omp(unsigned);
+std::chrono::nanoseconds measure_time_tbb(unsigned);
+std::chrono::nanoseconds measure_time_seq(unsigned);

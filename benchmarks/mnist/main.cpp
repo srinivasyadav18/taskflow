@@ -39,6 +39,7 @@ std::chrono::milliseconds measure_time_tbb(
   return std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1);
 }
 
+
 // Procedure
 void mnist(
   const std::string& model,

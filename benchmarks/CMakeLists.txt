@@ -7,6 +7,11 @@ endif()
 include_directories(${EIGEN_ROOT})
 
 # -----------------------------------------------------------------------------
+# find HPX package
+# -----------------------------------------------------------------------------
+
+
+# -----------------------------------------------------------------------------
 # find OpenMP package
 # -----------------------------------------------------------------------------
 include(FindOpenMP)
@@ -37,6 +42,8 @@ cmake_policy(POP)
 find_package(TBB REQUIRED)
 #cmake_policy(POP)
 
+
+find_package(HPX REQUIRED)
 # -----------------------------------------------------------------------------
 # Benchmarks
 # -----------------------------------------------------------------------------
@@ -69,6 +76,11 @@ add_executable(
   ${TF_BENCHMARK_DIR}/graph_traversal/seq.cpp
   ${TF_BENCHMARK_DIR}/graph_traversal/taskflow.cpp
 )
+# add_executable(
+#   bench_graph_traversal_hpx
+# 	    ${TF_BENCHMARK_DIR}/graph_traversal/hpx.cpp
+# )
+# target_link_libraries(bench_graph_traversal_hpx HPX::hpx)
 target_include_directories(bench_graph_traversal PRIVATE ${PROJECT_SOURCE_DIR}/3rd-party/CLI11)
 target_link_libraries(
   bench_graph_traversal 
@@ -141,8 +153,14 @@ add_executable(
   ${TF_BENCHMARK_DIR}/matrix_multiplication/main.cpp
   ${TF_BENCHMARK_DIR}/matrix_multiplication/omp.cpp
   ${TF_BENCHMARK_DIR}/matrix_multiplication/tbb.cpp
+  ${TF_BENCHMARK_DIR}/matrix_multiplication/seq.cpp
   ${TF_BENCHMARK_DIR}/matrix_multiplication/taskflow.cpp
 )
+add_executable(
+  bench_matrix_multiplication_hpx
+	    ${TF_BENCHMARK_DIR}/matrix_multiplication/hpx.cpp
+	    )
+target_link_libraries(bench_matrix_multiplication_hpx HPX::hpx)	
 target_include_directories(bench_matrix_multiplication PRIVATE ${PROJECT_SOURCE_DIR}/3rd-party/CLI11)
 target_link_libraries(
   bench_matrix_multiplication 
@@ -159,8 +177,14 @@ add_executable(
   ${TF_BENCHMARK_DIR}/mandelbrot/main.cpp
   ${TF_BENCHMARK_DIR}/mandelbrot/omp.cpp
   ${TF_BENCHMARK_DIR}/mandelbrot/tbb.cpp
+  ${TF_BENCHMARK_DIR}/mandelbrot/seq.cpp
   ${TF_BENCHMARK_DIR}/mandelbrot/taskflow.cpp
 )
+add_executable(
+  bench_mandelbrot_hpx
+	    ${TF_BENCHMARK_DIR}/mandelbrot/hpx.cpp
+	    )
+target_link_libraries(bench_mandelbrot_hpx HPX::hpx)	
 target_include_directories(bench_mandelbrot PRIVATE ${PROJECT_SOURCE_DIR}/3rd-party/CLI11)
 target_link_libraries(
   bench_mandelbrot 
@@ -177,8 +201,14 @@ add_executable(
   ${TF_BENCHMARK_DIR}/black_scholes/main.cpp
   ${TF_BENCHMARK_DIR}/black_scholes/omp.cpp
   ${TF_BENCHMARK_DIR}/black_scholes/tbb.cpp
+  ${TF_BENCHMARK_DIR}/black_scholes/seq.cpp
   ${TF_BENCHMARK_DIR}/black_scholes/taskflow.cpp
 )
+# add_executable(
+#   bench_black_scholes_hpx
+#   ${TF_BENCHMARK_DIR}/black_scholes/hpx.cpp
+# )
+# target_link_libraries(bench_black_scholes_hpx HPX::hpx)
 target_include_directories(bench_black_scholes PRIVATE ${PROJECT_SOURCE_DIR}/3rd-party/CLI11)
 target_link_libraries(
   bench_black_scholes 
@@ -195,8 +225,14 @@ add_executable(
   ${TF_BENCHMARK_DIR}/reduce_sum/main.cpp
   ${TF_BENCHMARK_DIR}/reduce_sum/omp.cpp
   ${TF_BENCHMARK_DIR}/reduce_sum/tbb.cpp
+  ${TF_BENCHMARK_DIR}/reduce_sum/seq.cpp
   ${TF_BENCHMARK_DIR}/reduce_sum/taskflow.cpp
 )
+add_executable(
+	  bench_reduce_sum_hpx
+	    ${TF_BENCHMARK_DIR}/reduce_sum/hpx.cpp
+	    )
+target_link_libraries(bench_reduce_sum_hpx HPX::hpx)	
 target_include_directories(bench_reduce_sum PRIVATE ${PROJECT_SOURCE_DIR}/3rd-party/CLI11)
 target_link_libraries(
   bench_reduce_sum 
@@ -213,8 +249,14 @@ add_executable(
   ${TF_BENCHMARK_DIR}/sort/main.cpp
   ${TF_BENCHMARK_DIR}/sort/omp.cpp
   ${TF_BENCHMARK_DIR}/sort/tbb.cpp
+  ${TF_BENCHMARK_DIR}/sort/seq.cpp
   ${TF_BENCHMARK_DIR}/sort/taskflow.cpp
 )
+add_executable(
+	  bench_sort_hpx
+	    ${TF_BENCHMARK_DIR}/sort/hpx.cpp
+	    )
+target_link_libraries(bench_sort_hpx HPX::hpx)	
 target_include_directories(bench_sort PRIVATE ${PROJECT_SOURCE_DIR}/3rd-party/CLI11)
 target_link_libraries(
   bench_sort 
@@ -320,8 +362,15 @@ add_executable(
   ${TF_BENCHMARK_DIR}/for_each/main.cpp
   ${TF_BENCHMARK_DIR}/for_each/omp.cpp
   ${TF_BENCHMARK_DIR}/for_each/tbb.cpp
+  ${TF_BENCHMARK_DIR}/for_each/seq.cpp
   ${TF_BENCHMARK_DIR}/for_each/taskflow.cpp
 )
+add_executable(
+  bench_for_each_hpx
+  ${TF_BENCHMARK_DIR}/for_each/hpx.cpp
+)
+target_link_libraries(bench_for_each_hpx HPX::hpx)
+
 target_include_directories(bench_for_each PRIVATE ${PROJECT_SOURCE_DIR}/3rd-party/CLI11)
 target_link_libraries(
   bench_for_each 
@@ -338,8 +387,15 @@ add_executable(
   ${TF_BENCHMARK_DIR}/scan/main.cpp
   ${TF_BENCHMARK_DIR}/scan/omp.cpp
   ${TF_BENCHMARK_DIR}/scan/tbb.cpp
+  ${TF_BENCHMARK_DIR}/scan/seq.cpp
   ${TF_BENCHMARK_DIR}/scan/taskflow.cpp
 )
+add_executable(
+  bench_scan_hpx
+  ${TF_BENCHMARK_DIR}/scan/hpx.cpp
+)
+target_link_libraries(bench_scan_hpx HPX::hpx)
+
 target_include_directories(bench_scan PRIVATE ${PROJECT_SOURCE_DIR}/3rd-party/CLI11)
 target_link_libraries(
   bench_scan 

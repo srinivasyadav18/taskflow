@@ -37,7 +37,7 @@ void black_scholes(
             << std::setw(12) << "runtime"
             << std::endl;
 
-  for(size_t N = 1000; N<=10000; N+=1000) {
+  for(size_t N = std::pow(2, 7); N<= std::pow(2, 10);  N*=2) {
 
     generate_options(N);
 
@@ -53,13 +53,16 @@ void black_scholes(
       else if(model == "omp") {
         runtime += measure_time_omp(num_threads).count();
       }
+      else if(model == "seq") {
+        runtime += measure_time_seq(num_threads).count();
+      }
       else assert(false);
     }
 
     destroy_options();
 
     std::cout << std::setw(12) << N
-              << std::setw(12) << runtime / num_rounds / 1e3
+              << std::setw(12) << runtime / num_rounds / 1e9
               << std::endl;
   }
 }
@@ -81,8 +84,8 @@ int main (int argc, char *argv[]) {
   std::string model = "tf";
   app.add_option("-m,--model", model, "model name tbb|omp|tf (default=tf)")
      ->check([] (const std::string& m) {
-        if(m != "tbb" && m != "tf" && m != "omp") {
-          return "model name should be \"tbb\", \"omp\", or \"tf\"";
+        if(m != "tbb" && m != "tf" && m != "omp" && m != "seq") {
+          return "model name should be seq or \"tbb\", \"omp\", or \"tf\"";
         }
         return "";
      });
